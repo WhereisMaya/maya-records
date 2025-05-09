@@ -8,11 +8,13 @@
       background-color: black;
       color: #ffdf91;
       font-family: monospace;
+      margin: 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
+      overflow: hidden;
     }
     .fade-text {
       white-space: pre;
@@ -23,71 +25,67 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
+    .video-container {
+      width: 100%;
+      max-width: 800px;
+    }
+    .sad-face {
+      font-size: 100px;
+      margin-top: 40px;
+    }
+    .fade-message {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px 40px;
+      border-radius: 15px;
+      color: #ffffff;
+      font-size: 16px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
   </style>
+  <script>
+    function showMessage() {
+      const message = document.querySelector('.fade-message');
+      message.style.opacity = '1';
+      setTimeout(() => {
+        message.style.opacity = '0';
+      }, 3000);
+    }
+  </script>
 </head>
 <body>
   <div class="fade-text">
-    =====                                 
-                        =======================                        
-                    ===============================                    
-                 ========----:::::::::::::----========                 
-              =======---:::::::::::::::::::::::---=======              
-            ======---:::::::::::::::::::::::::::::---======            
-          ======----------------------------------------=====          
-         =====-------------------------------------------=====         
-       =====-----------------------------------------------=====       
-      =====--------------------------------------------------====      
-     ====-----------------------------------------------------====     
-    ====-------------------------------------------------------====    
-   ====---------------------------------------------------------====   
-   ====----------------#-----------------------#-----------------===   
-  ====--------------###*-----------------------*###--------------====  
-  ===------------*****---------------------------*****------------===  
- ====---------#*****+-----------------------------+*****#---------==== 
- ====----###****#+-----------------------------------+#****###----==== 
- ====--------------------------------------------------------------=== 
- ====--------------------------------------------------------------=== 
- ====--------------------------------------------------------------=== 
- ====-------------------------------------------------------------==== 
- ====--------##--------------#+---------##--------------#=--------==== 
-  ===---------################-----------################---------===  
-  ====---------**************-------------**************---------====  
-   ====----------**********-----------------**********-----------===   
-   ====---------------------------------------------------------====   
-    ====-------------------------------------------------------====    
-     ====-----------------------------------------------------====     
-      ====---------------------------------------------------====      
-       =====-----------------------------------------------=====       
-         =====--------------###############---------------====         
-          =====-------------#************##-------------=====          
-            ======-----------------------------------======            
-              =======-----------------------------=======              
-                 ========---------------------========                 
-                    =============-----=============                    
-                        ======================+                        
-                                 ==+==                                 
+    ** Under Construction - Please Retract Carefully **
+  </div>
+
+  <div class="video-container">
+    <video width="100%" autoplay muted loop>
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="sad-face">😢</div>
+
+  <form action="submit_request.php" method="post" onsubmit="showMessage(); return false;">
+    <input type="text" name="retraction" placeholder="Enter your retraction here...">
+    <button type="submit">Submit</button>
+  </form>
+
+  <div class="fade-message" id="fadeMessage">
+    Thank you. Your request has been considered.<br>
+    <button onclick="location.reload()">Retract Again</button>
   </div>
 
   <audio id="redactAudio" autoplay>
     <source src="redact.mp3" type="audio/mpeg">
-    <!-- fallback: no audio -->
   </audio>
-
-  <script>
-    const audio = document.getElementById('redactAudio');
-    const startTime = 363; // 6 minutes, 3 seconds
-
-    audio.addEventListener('loadedmetadata', () => {
-      if (audio.duration > startTime) {
-        audio.currentTime = startTime;
-      }
-    });
-
-    // Force-loop from startTime if user skips back
-    audio.addEventListener('ended', () => {
-      audio.currentTime = startTime;
-      audio.play();
-    });
-  </script>
 </body>
 </html>
