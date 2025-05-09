@@ -13,41 +13,77 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      overflow: hidden;
+      min-height: 150vh;
+      overflow-y: auto;
     }
     .fade-text {
       white-space: pre;
       text-align: center;
       animation: fadeBlink 3s infinite;
     }
-    @keyframes fadeBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+   
     .video-container {
-      width: 100%;
+      width: 90%;
       max-width: 800px;
+      max-height: 90vh;
     }
-    .sad-face {
-      font-size: 100px;
-      margin-top: 40px;
-    }
-    .fade-message {
-      position: fixed;
-      top: 20%;
+   .sad-face-text {
+    font-size: 24px;
+    margin-top: 40px;
+    white-space: pre;
+    text-align: center;
+    line-height: 1.5;
+    position: relative;
+    animation: fadeBlink 3s infinite, dimBrightness 6s infinite alternate;
+  }
+
+  @keyframes fadeBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes dimBrightness {
+    0% { filter: brightness(0.7); }
+    50% { filter: brightness(1); }
+    100% { filter: brightness(0.7); }
+  }
+
+    .input-mouth {
+      position: absolute;
+      top: 65%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px 40px;
-      border-radius: 15px;
-      color: #ffffff;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 30px;
+      border: 2px solid #ffdf91;
+      background: transparent;
+      color: #ffdf91;
       font-size: 16px;
       text-align: center;
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
+      outline: none;
+      border-radius: 5px;
+    }
+    .submit-button {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 10px 0;
+      background: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      border-top: 2px solid #ffdf91;
+    }
+    .submit-button button {
+      background: transparent;
+      color: #ffdf91;
+      border: 2px solid #ffdf91;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .submit-button button:hover {
+      background: #ffdf91;
+      color: #000;
     }
   </style>
   <script>
@@ -56,8 +92,12 @@
       message.style.opacity = '1';
       setTimeout(() => {
         message.style.opacity = '0';
-      }, 3000);
+      }, 5000);
     }
+
+    window.addEventListener('load', () => {
+      document.querySelector('.sad-face-text').classList.add('show');
+    });
   </script>
 </head>
 <body>
@@ -65,27 +105,61 @@
     ** Under Construction - Please Retract Carefully **
   </div>
 
-  <div class="video-container">
+<div class="video-container">
     <video width="100%" autoplay muted loop>
       <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
 
-  <div class="sad-face">😢</div>
+  <div class="sad-face-text">
+  <input class="input-mouth" type="text" name="retraction" placeholder="Enter your retraction here..."> 
+                                =====                                 
+                        =======================                        
+                    ===============================                    
+                 ========----:::::::::::::----========                 
+              =======---:::::::::::::::::::::::---=======              
+           ======----:::::::::::::::::::::::::::::----======            
+                  ======------------------------------------------=====                    
+      ======------------------------------------------------====      
+     ====-----------------------------------------------------====     
+    ====-------------------------------------------------------====     
+   ====----------------#-----------------------#-----------------===   
+  ====--------------###*-----------------------*###--------------====  
+  ===------------*****---------------------------*****------------===  
+ ====---------#*****+-----------------------------+*****#---------==== 
+ ====----###****#+-----------------------------------+#****###----==== 
+ ====-------------------------------------------------------------==== 
+ ====-------------------------------------------------------------==== 
+ ====--------##--------------#+---------##--------------#=--------==== 
+  ===---------################-----------################---------===  
+  ====---------**************-------------**************---------====  
+   ====----------**********-----------------**********-----------===   
+    ====-------------------------------------------------------====    
+     ====-----------------------------------------------------====     
+      ====---------------------------------------------------====      
+       =====-----------------------------------------------=====       
+         =====--------------###############---------------====         
+          =====-------------#************##-------------=====          
+            ======-----------------------------------======            
+              =======-----------------------------=======              
+                 ========---------------------========                 
+                    =============-----=============                    
+                        ======================+                        
+    ==+==   
 
-  <form action="submit_request.php" method="post" onsubmit="showMessage(); return false;">
-    <input type="text" name="retraction" placeholder="Enter your retraction here...">
-    <button type="submit">Submit</button>
-  </form>
 
-  <div class="fade-message" id="fadeMessage">
-    Thank you. Your request has been considered.<br>
-    <button onclick="location.reload()">Retract Again</button>
   </div>
 
-  <audio id="redactAudio" autoplay>
-    <source src="redact.mp3" type="audio/mpeg">
-  </audio>
+  <div class="submit-button">
+    <form action="submit_request.php" method="post" onsubmit="showMessage(); return false;">
+      <button type="submit">Submit Retraction</button>
+    </form>
+  </div>
+
+  <div class="fade-message" id="fadeMessage" style="opacity: 0; position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%);">
+    Thank you. Your request has been considered.
+  </div>
+
 </body>
 </html>
