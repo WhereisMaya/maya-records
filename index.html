@@ -24,7 +24,7 @@
       background-position: center;
       background-repeat: no-repeat;
       transition: background-image 0.4s ease-in-out;
-      z-index: -1;
+      z-index: 1;
     }
   </style>
 </head>
@@ -42,12 +42,15 @@
 
     function setImage(num) {
       const filename = `mpm${num}.png`;
+      console.log('Loading image:', filename);
       const img = new Image();
       img.onload = () => {
+        console.log('Image loaded successfully:', filename);
         bg.style.backgroundImage = `url('${filename}')`;
         index = num + 1;
       };
       img.onerror = () => {
+        console.log('Image failed to load:', filename);
         index = 1;
         setImage(index);
       };
@@ -55,10 +58,12 @@
     }
 
     document.body.addEventListener('click', () => {
+      console.log('Click detected, loading image:', index);
       setImage(index);
     });
 
     // Initialize with mpm1.png
+    console.log('Initializing with mpm1.png');
     setImage(index);
 
     // Ensure audio plays when user interacts (browser autoplay policy)
