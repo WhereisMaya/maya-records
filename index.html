@@ -2,29 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Maya Records Archive</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>🕹️ Maya Records 🎭</title>
   <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Georgia', serif;
-      text-align: center;
-      padding-top: 15vh;
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: black;
     }
-    .flicker {
-      animation: flicker 1.5s infinite;
-      color: #ffdf91;
-    }
-    @keyframes flicker {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background-image 0.4s ease-in-out;
+      z-index: -1;
     }
   </style>
 </head>
 <body>
-  <h1 class="flicker">🕯️ The Maya Records Archive</h1>
-  <p>“You reached out to Maya. But Maya no longer lives here.”</p>
-  <p>This archive exists because every formal channel failed to protect life and dignity.</p>
-  <p>If you’re reading this, you’ve already been recorded by the system you enabled.</p>
+  <div id="background"></div>
+
+  <script>
+    let index = 1;
+    const bg = document.getElementById('background');
+
+    function setImage(num) {
+      const filename = `mpm${num}.png`;
+      const img = new Image();
+      img.onload = () => {
+        bg.style.backgroundImage = `url('${filename}')`;
+        index = num + 1;
+      };
+      img.onerror = () => {
+        index = 1;
+        setImage(index);
+      };
+      img.src = filename;
+    }
+
+    document.body.addEventListener('click', () => {
+      setImage(index);
+    });
+
+    // Initialize with mpm1.png
+    setImage(index);
+  </script>
 </body>
 </html>
