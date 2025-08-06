@@ -75,6 +75,81 @@
       padding: 8px;
       border-radius: 5px;
     }
+
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #000, #1a1a1a, #000);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .login-container {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      color: #00ff00;
+      box-shadow: 0 0 20px #00ff00;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 20px #00ff00; }
+      to { box-shadow: 0 0 30px #00ff00, 0 0 40px #00ff00; }
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .login-container input {
+      background: transparent;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      outline: none;
+      width: 200px;
+    }
+
+    .login-container input:focus {
+      box-shadow: 0 0 10px #00ff00;
+    }
+
+    .login-container button {
+      background: transparent;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s;
+    }
+
+    .login-container button:hover {
+      background: #00ff00;
+      color: #000;
+    }
+
+    .error-message {
+      color: #ff0000;
+      margin-top: 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -98,7 +173,20 @@
     <div>L/R: Move Left/Right</div>
     <div>O/P: Decrease/Increase Opacity</div>
     <div>-/+: Decrease/Increase Size</div>
-    <div>R: Reload Video</div>
+    <div>F1-F9: Reload Video</div>
+    <div>?: Help</div>
+    <div>l: Login</div>
+    <div>.version1.1.mod</div>
+  </div>
+
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-container">
+      <h2>SYSTEM LOGIN</h2>
+      <input type="password" id="passwordInput" placeholder="Enter password..." />
+      <br>
+      <button onclick="attemptLogin()">ACCESS</button>
+      <div class="error-message" id="errorMessage"></div>
+    </div>
   </div>
 
   <script>
@@ -107,6 +195,10 @@
     let isVideoVisible = false;
     let videos = [];
     let currentVideoUrl = '';
+    let isLoggedIn = false;
+    let menuVideos = [];
+    let menuVideoIndex = 0;
+    let isMenuMode = false;
     
     const bg = document.getElementById('background');
     const audioPlayer = document.getElementById('audio-player');
@@ -131,6 +223,41 @@
       } catch (error) {
         console.error('Failed to load video playlist:', error);
       }
+    }
+
+    // Load menu video playlist
+    async function loadMenuPlaylist() {
+      try {
+        const response = await fetch('menupl.txt');
+        const text = await response.text();
+        menuVideos = text.trim().split('\n').filter(line => line.trim() !== '');
+        if (menuVideos.length > 0) {
+          loadNextMenuVideo();
+        }
+      } catch (error) {
+        console.error('Failed to load menu playlist:', error);
+      }
+    }
+
+    function loadNextMenuVideo() {
+      if (menuVideos.length === 0) return;
+      
+      if (menuVideoIndex >= menuVideos.length) {
+        // All videos played, show the last URL as a website
+        const lastUrl = menuVideos[menuVideos.length - 1];
+        if (lastUrl.includes('http')) {
+          videoIframe.src = lastUrl;
+          videoContainer.style.pointerEvents = 'auto';
+        }
+        return;
+      }
+      
+      const currentUrl = menuVideos[menuVideoIndex];
+      const embedUrl = convertToEmbedUrl(currentUrl);
+      videoIframe.src = embedUrl;
+      videoContainer.style.pointerEvents = 'none';
+      
+      menuVideoIndex++;
     }
 
     function loadNextVideo() {
@@ -163,12 +290,14 @@
         bg.style.backgroundImage = `url('${filename}')`;
         index = num + 1;
         
-        // Toggle video visibility every other frame
-        isVideoVisible = !isVideoVisible;
-        if (isVideoVisible) {
-          showVideo();
-        } else {
-          hideVideo();
+        // Only toggle video visibility if not in menu mode
+        if (!isMenuMode) {
+          isVideoVisible = !isVideoVisible;
+          if (isVideoVisible) {
+            showVideo();
+          } else {
+            hideVideo();
+          }
         }
       };
       img.onerror = () => {
@@ -226,16 +355,17 @@
           videoY = Math.min(100, videoY + step);
           break;
         case 'l':
-          videoX = Math.max(0, videoX - step);
+          if (e.key === 'l') {
+            // Show login screen
+            showLoginScreen();
+          } else {
+            // Move left
+            videoX = Math.max(0, videoX - step);
+          }
           break;
         case 'r':
-          if (e.key === 'R') {
-            // Reload video
-            loadNextVideo();
-          } else {
-            // Move right
-            videoX = Math.min(100, videoX + step);
-          }
+          // Move right
+          videoX = Math.min(100, videoX + step);
           break;
         case 'o':
           videoOpacity = Math.max(0, videoOpacity - opacityStep);
@@ -250,10 +380,65 @@
         case '+':
           videoScale = Math.min(3, videoScale + scaleStep);
           break;
+        case '?':
+          showHelp();
+          break;
+        default:
+          // F1-F9 keys for reload
+          if (e.key.startsWith('F') && e.key.length === 2) {
+            const fNumber = parseInt(e.key.substring(1));
+            if (fNumber >= 1 && fNumber <= 9) {
+              if (isMenuMode) {
+                loadNextMenuVideo();
+              } else {
+                loadNextVideo();
+              }
+            }
+          }
       }
       
       updateVideoPosition();
     });
+
+    function showLoginScreen() {
+      document.getElementById('loginOverlay').style.display = 'flex';
+      document.getElementById('passwordInput').focus();
+    }
+
+    function attemptLogin() {
+      const password = document.getElementById('passwordInput').value;
+      const errorMessage = document.getElementById('errorMessage');
+      
+      if (password === 'charles') {
+        // Login successful
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('passwordInput').value = '';
+        errorMessage.textContent = '';
+        
+        // Position iframe correctly
+        videoX = 50;
+        videoY = 50;
+        videoScale = 1;
+        videoOpacity = 0.8;
+        updateVideoPosition();
+        
+        // Switch to menu mode
+        isMenuMode = true;
+        isLoggedIn = true;
+        loadMenuPlaylist();
+        
+        // Show video immediately
+        videoContainer.classList.remove('fade-out');
+        videoContainer.classList.add('fade-in');
+        
+      } else {
+        errorMessage.textContent = 'ACCESS DENIED';
+      }
+    }
+
+    function showHelp() {
+      alert('CONTROLS:\n\nU/D: Move Up/Down\nL/R: Move Left/Right\nO/P: Decrease/Increase Opacity\n-/+: Decrease/Increase Size\nF1-F9: Reload Video\n?: Help\nl: Login\n\n.version1.1.mod');
+    }
 
     document.body.addEventListener('click', () => {
       console.log('Click detected, loading image:', index);
