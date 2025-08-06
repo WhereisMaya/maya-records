@@ -33,19 +33,127 @@
       transition: background-image 0.5s ease-in-out;
       z-index: 1;
     }
+
+    #video-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      height: 90vh;
+      z-index: 2;
+      opacity: 0.5;
+      transition: opacity 5s ease-in-out;
+      pointer-events: none;
+    }
+
+    #video-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    }
+
+    .fade-in {
+      opacity: 0.5 !important;
+    }
+
+    .fade-out {
+      opacity: 0 !important;
+    }
+
+    .controls-info {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <div id="background"></div>
   
+  <div id="video-container">
+    <iframe id="video-iframe" 
+            src="" 
+            frameborder="0" 
+            allowfullscreen
+            allow="autoplay; encrypted-media">
+    </iframe>
+  </div>
+
   <audio id="audio-player" autoplay loop>
     <source src="Track1NGE.mp3" type="audio/mpeg">
   </audio>
 
+  <div class="controls-info">
+    <div>U/D: Move Up/Down</div>
+    <div>L/R: Move Left/Right</div>
+    <div>O/P: Decrease/Increase Opacity</div>
+    <div>-/+: Decrease/Increase Size</div>
+    <div>R: Reload Video</div>
+  </div>
+
   <script>
     let index = 1;
+    let videoIndex = 0;
+    let isVideoVisible = false;
+    let videos = [];
+    let currentVideoUrl = '';
+    
     const bg = document.getElementById('background');
     const audioPlayer = document.getElementById('audio-player');
+    const videoContainer = document.getElementById('video-container');
+    const videoIframe = document.getElementById('video-iframe');
+
+    // Video player state
+    let videoX = 50; // percentage
+    let videoY = 50; // percentage
+    let videoOpacity = 0.5;
+    let videoScale = 1;
+    let videoRotation = 0;
+
+    // Load video playlist
+    async function loadVideoPlaylist() {
+      try {
+        const response = await fetch('videopl.txt');
+        const text = await response.text();
+        videos = text.trim().split('\n').filter(line => line.trim() !== '');
+        if (videos.length > 0) {
+          loadNextVideo();
+        }
+      } catch (error) {
+        console.error('Failed to load video playlist:', error);
+      }
+    }
+
+    function loadNextVideo() {
+      if (videos.length === 0) return;
+      
+      currentVideoUrl = videos[videoIndex];
+      const embedUrl = convertToEmbedUrl(currentVideoUrl);
+      videoIframe.src = embedUrl;
+      
+      videoIndex = (videoIndex + 1) % videos.length;
+    }
+
+    function convertToEmbedUrl(url) {
+      // Convert YouTube watch URLs to embed URLs
+      if (url.includes('youtube.com/watch')) {
+        const videoId = url.split('v=')[1]?.split('&')[0];
+        if (videoId) {
+          return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}`;
+        }
+      }
+      return url;
+    }
 
     function setImage(num) {
       const filename = `mpm${num}.png`;
@@ -55,6 +163,14 @@
         console.log('Image loaded successfully:', filename);
         bg.style.backgroundImage = `url('${filename}')`;
         index = num + 1;
+        
+        // Toggle video visibility every other frame
+        isVideoVisible = !isVideoVisible;
+        if (isVideoVisible) {
+          showVideo();
+        } else {
+          hideVideo();
+        }
       };
       img.onerror = () => {
         console.log('Image failed to load:', filename);
@@ -64,13 +180,82 @@
       img.src = filename;
     }
 
+    function showVideo() {
+      // Random orientation
+      videoRotation = Math.random() * 360;
+      videoIframe.style.transform = `rotate(${videoRotation}deg)`;
+      
+      // Fade in over 5 seconds
+      videoContainer.classList.remove('fade-out');
+      videoContainer.classList.add('fade-in');
+      
+      updateVideoPosition();
+    }
+
+    function hideVideo() {
+      // No fade out, just hide
+      videoContainer.classList.remove('fade-in');
+      videoContainer.classList.add('fade-out');
+    }
+
+    function updateVideoPosition() {
+      videoContainer.style.left = `${videoX}%`;
+      videoContainer.style.top = `${videoY}%`;
+      videoContainer.style.transform = `translate(-50%, -50%) scale(${videoScale})`;
+      videoContainer.style.opacity = videoOpacity;
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      const step = 5;
+      const opacityStep = 0.1;
+      const scaleStep = 0.1;
+      
+      switch(e.key.toLowerCase()) {
+        case 'u':
+          videoY = Math.max(0, videoY - step);
+          break;
+        case 'd':
+          videoY = Math.min(100, videoY + step);
+          break;
+        case 'l':
+          videoX = Math.max(0, videoX - step);
+          break;
+        case 'r':
+          if (e.key === 'R') {
+            // Reload video
+            loadNextVideo();
+          } else {
+            // Move right
+            videoX = Math.min(100, videoX + step);
+          }
+          break;
+        case 'o':
+          videoOpacity = Math.max(0, videoOpacity - opacityStep);
+          break;
+        case 'p':
+          videoOpacity = Math.min(1, videoOpacity + opacityStep);
+          break;
+        case '-':
+          videoScale = Math.max(0.1, videoScale - scaleStep);
+          break;
+        case '=':
+        case '+':
+          videoScale = Math.min(3, videoScale + scaleStep);
+          break;
+      }
+      
+      updateVideoPosition();
+    });
+
     document.body.addEventListener('click', () => {
       console.log('Click detected, loading image:', index);
       setImage(index);
     });
 
-    // Initialize with mpm1.png
+    // Initialize
     console.log('Initializing with mpm1.png');
+    loadVideoPlaylist();
     setImage(index);
 
     // Ensure audio plays when user interacts (browser autoplay policy)
