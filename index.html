@@ -267,9 +267,25 @@
       }
       
       const currentUrl = menuVideos[menuVideoIndex];
-      loadVideo(currentUrl, false); // Unmuted for menu videos
-      videoContainer.style.pointerEvents = 'none';
+      const isMP4 = currentUrl.toLowerCase().endsWith('.mp4');
       
+      if (isMP4) {
+        // Use video player for MP4 files in menu
+        loadVideo(currentUrl, false); // Unmuted for menu videos
+      } else {
+        // Use iframe for YouTube and website URLs in menu
+        videoIframe.style.display = 'block';
+        videoPlayer.style.display = 'none';
+        const embedUrl = convertToEmbedUrl(currentUrl, false); // Unmuted for menu videos
+        videoIframe.src = embedUrl;
+        
+        // Timer for YouTube videos in menu
+        setTimeout(() => {
+          loadNextMenuVideo();
+        }, 220000); // 220 seconds
+      }
+      
+      videoContainer.style.pointerEvents = 'none';
       menuVideoIndex++;
     }
 
