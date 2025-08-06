@@ -42,7 +42,7 @@
       width: 90vw;
       height: 90vh;
       z-index: 2;
-      opacity: 0.5;
+      opacity: 0;
       transition: opacity 5s ease-in-out;
       pointer-events: none;
     }
@@ -512,6 +512,11 @@
     console.log('Initializing with mpm1.png');
     loadVideoPlaylist();
     setImage(index);
+    
+    // Show video container after 6 seconds
+    setTimeout(() => {
+      videoContainer.style.opacity = '0.5';
+    }, 6000);
 
     // Ensure audio plays when user interacts (browser autoplay policy)
     document.addEventListener('click', function() {
