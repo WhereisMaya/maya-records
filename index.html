@@ -47,12 +47,16 @@
       pointer-events: none;
     }
 
-    #video-iframe {
+    #video-iframe, #video-player {
       width: 100%;
       height: 100%;
       border: none;
       transform-origin: center;
       transition: transform 0.3s ease;
+    }
+
+    #video-player {
+      display: none;
     }
 
     .fade-in {
@@ -162,6 +166,13 @@
             allowfullscreen
             allow="autoplay; encrypted-media">
     </iframe>
+    <video id="video-player" 
+           controls="false" 
+           autoplay 
+           loop 
+           muted>
+      Your browser does not support the video tag.
+    </video>
   </div>
 
   <audio id="audio-player" autoplay loop>
@@ -204,6 +215,7 @@
     const audioPlayer = document.getElementById('audio-player');
     const videoContainer = document.getElementById('video-container');
     const videoIframe = document.getElementById('video-iframe');
+    const videoPlayer = document.getElementById('video-player');
 
     // Video player state
     let videoX = 50; // percentage
@@ -246,6 +258,8 @@
         // All videos played, show the last URL as a website
         const lastUrl = menuVideos[menuVideos.length - 1];
         if (lastUrl.includes('http')) {
+          videoIframe.style.display = 'block';
+          videoPlayer.style.display = 'none';
           videoIframe.src = lastUrl;
           videoContainer.style.pointerEvents = 'auto';
         }
@@ -253,8 +267,7 @@
       }
       
       const currentUrl = menuVideos[menuVideoIndex];
-      const embedUrl = convertToEmbedUrl(currentUrl, false); // Unmuted for menu videos
-      videoIframe.src = embedUrl;
+      loadVideo(currentUrl, false); // Unmuted for menu videos
       videoContainer.style.pointerEvents = 'none';
       
       menuVideoIndex++;
@@ -264,8 +277,7 @@
       if (videos.length === 0) return;
       
       currentVideoUrl = videos[videoIndex];
-      const embedUrl = convertToEmbedUrl(currentVideoUrl, true); // Keep muted for background videos
-      videoIframe.src = embedUrl;
+      loadVideo(currentVideoUrl, true); // Keep muted for background videos
       
       videoIndex = (videoIndex + 1) % videos.length;
     }
@@ -279,7 +291,28 @@
           return `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}`;
         }
       }
+      
       return url;
+    }
+
+    function loadVideo(url, muted = true) {
+      const isMP4 = url.toLowerCase().endsWith('.mp4');
+      
+      if (isMP4) {
+        // Use HTML5 video player for MP4 files
+        videoIframe.style.display = 'none';
+        videoPlayer.style.display = 'block';
+        videoPlayer.src = url;
+        videoPlayer.muted = muted;
+        videoPlayer.loop = true;
+        videoPlayer.autoplay = true;
+      } else {
+        // Use iframe for YouTube and other URLs
+        videoIframe.style.display = 'block';
+        videoPlayer.style.display = 'none';
+        const embedUrl = convertToEmbedUrl(url, muted);
+        videoIframe.src = embedUrl;
+      }
     }
 
     function setImage(num) {
