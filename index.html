@@ -52,10 +52,27 @@
       transform: translate(-50%, -50%);
       width: 90vw;
       height: 90vh;
+      max-width: 100vw;
+      max-height: 100vh;
       z-index: 2;
       opacity: 0;
       transition: opacity 5s ease-in-out;
       pointer-events: none;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      #video-container {
+        width: 95vw;
+        height: 95vh;
+      }
+      
+      .controls-info {
+        font-size: 8px;
+        padding: 6px;
+        bottom: 10px;
+        left: 10px;
+      }
     }
 
     #video-iframe, #video-player {
@@ -89,6 +106,19 @@
       background: rgba(0, 0, 0, 0.9);
       padding: 8px;
       border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .typewriter {
+      display: inline-block;
+      border-right: 2px solid white;
+      animation: blink 1s infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes blink {
+      0%, 50% { border-color: white; }
+      51%, 100% { border-color: transparent; }
     }
 
     .login-overlay {
@@ -191,15 +221,8 @@
     <source src="Track1NGE.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="controls-info">
-    <div>U/D: Move Up/Down</div>
-    <div>L/R: Move Left/Right</div>
-    <div>O/P: Decrease/Increase Opacity</div>
-    <div>-/+: Decrease/Increase Size</div>
-    <div>F1-F9: Reload Video</div>
-    <div>?: Help</div>
-    <div>0: Login</div>
-    <div>.version1.1.mod</div>
+  <div class="controls-info" id="controlsInfo">
+    <div id="controlsText"></div>
   </div>
 
   <div class="login-overlay" id="loginOverlay">
@@ -208,6 +231,7 @@
       <input type="password" id="passwordInput" placeholder="Enter password..." />
       <br>
       <button onclick="attemptLogin()">ACCESS</button>
+      <button onclick="closeLogin()">CLOSE</button>
       <div class="error-message" id="errorMessage"></div>
     </div>
   </div>
@@ -545,6 +569,40 @@
       alert('CONTROLS:\n\nU/D: Move Up/Down\nL/R: Move Left/Right\nO/P: Decrease/Increase Opacity\n-/+: Decrease/Increase Size\nF1-F9: Reload Video\n?: Help\n0: Login\n\n.version1.1.mod');
     }
 
+    function typewriterEffect(element, text, speed = 50) {
+      let i = 0;
+      let currentLine = '';
+      const lines = text.split('<br>');
+      let lineIndex = 0;
+      element.innerHTML = '';
+      
+      function type() {
+        if (lineIndex < lines.length) {
+          if (i < lines[lineIndex].length) {
+            currentLine += lines[lineIndex].charAt(i);
+            element.innerHTML = lines.slice(0, lineIndex).join('<br>') + '<br>' + currentLine;
+            i++;
+            setTimeout(type, speed);
+          } else {
+            // Move to next line
+            lineIndex++;
+            i = 0;
+            currentLine = '';
+            setTimeout(type, speed * 2); // Slight pause between lines
+          }
+        } else {
+          // Add blinking cursor after all text is complete
+          element.innerHTML += '<span class="typewriter"></span>';
+        }
+      }
+      
+      type();
+    }
+
+    function closeLogin() {
+      location.reload();
+    }
+
     document.body.addEventListener('click', () => {
       console.log('Click detected, loading image:', index);
       setImage(index);
@@ -566,6 +624,11 @@
       loadingOverlay.style.opacity = '0';
       setTimeout(() => {
         loadingOverlay.style.display = 'none';
+        
+        // Start typewriter effect for controls
+        const controlsText = document.getElementById('controlsText');
+        const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Video<br>?: Help<br>0: Login<br>.version1.1.mod`;
+        typewriterEffect(controlsText, controlsContent, 30);
       }, 1000);
     }, 5000);
 
