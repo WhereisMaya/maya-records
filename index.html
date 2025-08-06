@@ -69,10 +69,10 @@
       left: 20px;
       color: white;
       font-family: monospace;
-      font-size: 12px;
+      font-size: 10px;
       z-index: 10;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 8px;
       border-radius: 5px;
     }
   </style>
@@ -118,7 +118,6 @@
     let videoY = 50; // percentage
     let videoOpacity = 0.5;
     let videoScale = 1;
-    let videoRotation = 0;
 
     // Load video playlist
     async function loadVideoPlaylist() {
@@ -181,10 +180,6 @@
     }
 
     function showVideo() {
-      // Random orientation
-      videoRotation = Math.random() * 360;
-      videoIframe.style.transform = `rotate(${videoRotation}deg)`;
-      
       // Fade in over 5 seconds
       videoContainer.classList.remove('fade-out');
       videoContainer.classList.add('fade-in');
