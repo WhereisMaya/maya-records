@@ -210,6 +210,7 @@
     let menuVideos = [];
     let menuVideoIndex = 0;
     let isMenuMode = false;
+    let isFirstVideoLoad = true;
     
     const bg = document.getElementById('background');
     const audioPlayer = document.getElementById('audio-player');
@@ -384,8 +385,14 @@
     }
 
     function showVideo() {
-      // Random size between 0.5 and 3.0 scale
-      videoScale = 0.5 + Math.random() * 2.5;
+      // First load: 150% size, subsequent loads: random size
+      if (isFirstVideoLoad) {
+        videoScale = 1.5; // 150% size for first load
+        isFirstVideoLoad = false;
+      } else {
+        // Random size between 0.5 and 3.0 scale
+        videoScale = 0.5 + Math.random() * 2.5;
+      }
       
       // Random position above central y-axis (0-50% range)
       videoY = Math.random() * 50;
