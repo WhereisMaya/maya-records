@@ -288,7 +288,7 @@
         const videoId = url.split('v=')[1]?.split('&')[0];
         if (videoId) {
           const muteParam = muted ? '&mute=1' : '';
-          return `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}`;
+          return `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}&controls=0&showinfo=0&rel=0&loop=0&playlist=${videoId}`;
         }
       }
       
@@ -304,14 +304,33 @@
         videoPlayer.style.display = 'block';
         videoPlayer.src = url;
         videoPlayer.muted = muted;
-        videoPlayer.loop = true;
+        videoPlayer.loop = false; // Don't loop, let it play through
         videoPlayer.autoplay = true;
+        
+        // Listen for video end to load next video
+        videoPlayer.onended = () => {
+          if (!isMenuMode) {
+            loadNextVideo();
+          } else {
+            loadNextMenuVideo();
+          }
+        };
       } else {
         // Use iframe for YouTube and other URLs
         videoIframe.style.display = 'block';
         videoPlayer.style.display = 'none';
         const embedUrl = convertToEmbedUrl(url, muted);
         videoIframe.src = embedUrl;
+        
+        // For YouTube videos, we'll use a timer as fallback
+        // since we can't easily detect when YouTube videos end
+        setTimeout(() => {
+          if (!isMenuMode) {
+            loadNextVideo();
+          } else {
+            loadNextMenuVideo();
+          }
+        }, 30000); // 30 seconds as default duration
       }
     }
 
@@ -361,8 +380,8 @@
       // Random opacity between 0.3 and 0.8
       videoOpacity = 0.3 + Math.random() * 0.5;
       
-      // Load next video in playlist
-      if (!isMenuMode) {
+      // Only load next video if we don't have one playing
+      if (!isMenuMode && !currentVideoUrl) {
         loadNextVideo();
       }
       
