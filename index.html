@@ -322,8 +322,15 @@
         const embedUrl = convertToEmbedUrl(url, muted);
         videoIframe.src = embedUrl;
         
-        // Don't auto-advance YouTube videos - let them play through naturally
-        // Users can manually advance with F1-F9 keys if needed
+        // For YouTube videos, use a longer timer to allow full playback
+        // Most YouTube videos are 3-10 minutes, so we'll use 220 seconds as default
+        setTimeout(() => {
+          if (!isMenuMode) {
+            loadNextVideo();
+          } else {
+            loadNextMenuVideo();
+          }
+        }, 220000); // 220 seconds
       }
     }
 
@@ -373,8 +380,8 @@
       // Random opacity between 0.3 and 0.8
       videoOpacity = 0.3 + Math.random() * 0.5;
       
-      // Load next video only if we don't have one currently playing
-      if (!isMenuMode && (!currentVideoUrl || videoIndex === 0)) {
+      // Load next video if we don't have one currently playing
+      if (!isMenuMode && !currentVideoUrl) {
         loadNextVideo();
       }
       
