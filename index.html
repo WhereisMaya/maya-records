@@ -253,7 +253,7 @@
       }
       
       const currentUrl = menuVideos[menuVideoIndex];
-      const embedUrl = convertToEmbedUrl(currentUrl);
+      const embedUrl = convertToEmbedUrl(currentUrl, false); // Unmuted for menu videos
       videoIframe.src = embedUrl;
       videoContainer.style.pointerEvents = 'none';
       
@@ -264,18 +264,19 @@
       if (videos.length === 0) return;
       
       currentVideoUrl = videos[videoIndex];
-      const embedUrl = convertToEmbedUrl(currentVideoUrl);
+      const embedUrl = convertToEmbedUrl(currentVideoUrl, true); // Keep muted for background videos
       videoIframe.src = embedUrl;
       
       videoIndex = (videoIndex + 1) % videos.length;
     }
 
-    function convertToEmbedUrl(url) {
+    function convertToEmbedUrl(url, muted = true) {
       // Convert YouTube watch URLs to embed URLs
       if (url.includes('youtube.com/watch')) {
         const videoId = url.split('v=')[1]?.split('&')[0];
         if (videoId) {
-          return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}`;
+          const muteParam = muted ? '&mute=1' : '';
+          return `https://www.youtube.com/embed/${videoId}?autoplay=1${muteParam}&controls=0&showinfo=0&rel=0&loop=1&playlist=${videoId}`;
         }
       }
       return url;
