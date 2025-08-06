@@ -126,6 +126,8 @@
       box-shadow: 0 0 5px #00ff00;
     }
 
+
+
     .typewriter {
       display: inline-block;
       border-right: 2px solid white;
@@ -556,25 +558,21 @@
       const password = document.getElementById('passwordInput').value;
       const errorMessage = document.getElementById('errorMessage');
       
-      if (password === 'charles') {
-        // Login successful
+      if (password === atob('Y2hhcmxlcw==')) {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('passwordInput').value = '';
         errorMessage.textContent = '';
         
-        // Position iframe correctly
         videoX = 50;
         videoY = 50;
         videoScale = 1;
         videoOpacity = 0.8;
         updateVideoPosition();
         
-        // Switch to menu mode
         isMenuMode = true;
         isLoggedIn = true;
         loadMenuPlaylist();
         
-        // Show video immediately
         videoContainer.classList.remove('fade-out');
         videoContainer.classList.add('fade-in');
         
@@ -635,7 +633,7 @@
           controlsText.innerHTML = '';
           
           // Restart typewriter effect
-          const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Skip<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<input><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+          const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Skip<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<span style="background: transparent; border: 1px solid rgba(0, 255, 0, 0.5); color: #00ff00; padding: 1px 3px; border-radius: 2px;">input</span><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
           typewriterEffect(controlsText, controlsContent, 30);
         }
       });
@@ -665,7 +663,7 @@
         
         // Start typewriter effect for controls
         const controlsText = document.getElementById('controlsText');
-        const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Skip<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<input><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+        const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Skip<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<span style="background: transparent; border: 1px solid rgba(0, 255, 0, 0.5); color: #00ff00; padding: 1px 3px; border-radius: 2px;">input</span><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
         typewriterEffect(controlsText, controlsContent, 30);
       }, 1000);
     }, 5000);
