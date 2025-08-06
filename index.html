@@ -180,6 +180,18 @@
     }
 
     function showVideo() {
+      // Random size between 0.5 and 1.5 scale
+      videoScale = 0.5 + Math.random() * 1.0;
+      
+      // Random position above central y-axis (0-50% range)
+      videoY = Math.random() * 50;
+      
+      // Always central horizontally
+      videoX = 50;
+      
+      // Random opacity between 0.3 and 0.8
+      videoOpacity = 0.3 + Math.random() * 0.5;
+      
       // Fade in over 5 seconds
       videoContainer.classList.remove('fade-out');
       videoContainer.classList.add('fade-in');
