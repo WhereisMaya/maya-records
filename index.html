@@ -56,11 +56,11 @@
     }
 
     .fade-in {
-      opacity: 0.5 !important;
+      opacity: 0.5;
     }
 
     .fade-out {
-      opacity: 0 !important;
+      opacity: 0;
     }
 
     .controls-info {
@@ -175,7 +175,7 @@
     <div>-/+: Decrease/Increase Size</div>
     <div>F1-F9: Reload Video</div>
     <div>?: Help</div>
-    <div>l: Login</div>
+    <div>0: Login</div>
     <div>.version1.1.mod</div>
   </div>
 
@@ -339,6 +339,12 @@
       videoContainer.style.top = `${videoY}%`;
       videoContainer.style.transform = `translate(-50%, -50%) scale(${videoScale})`;
       videoContainer.style.opacity = videoOpacity;
+      
+      // Force opacity update by removing and re-adding classes
+      if (videoContainer.classList.contains('fade-in')) {
+        videoContainer.classList.remove('fade-in');
+        videoContainer.classList.add('fade-in');
+      }
     }
 
     // Keyboard controls
@@ -355,13 +361,12 @@
           videoY = Math.min(100, videoY + step);
           break;
         case 'l':
-          if (e.key === 'l') {
-            // Show login screen
-            showLoginScreen();
-          } else {
-            // Move left
-            videoX = Math.max(0, videoX - step);
-          }
+          // Move left
+          videoX = Math.max(0, videoX - step);
+          break;
+        case '0':
+          // Show login screen
+          showLoginScreen();
           break;
         case 'r':
           // Move right
@@ -437,7 +442,7 @@
     }
 
     function showHelp() {
-      alert('CONTROLS:\n\nU/D: Move Up/Down\nL/R: Move Left/Right\nO/P: Decrease/Increase Opacity\n-/+: Decrease/Increase Size\nF1-F9: Reload Video\n?: Help\nl: Login\n\n.version1.1.mod');
+      alert('CONTROLS:\n\nU/D: Move Up/Down\nL/R: Move Left/Right\nO/P: Decrease/Increase Opacity\n-/+: Decrease/Increase Size\nF1-F9: Reload Video\n?: Help\n0: Login\n\n.version1.1.mod');
     }
 
     document.body.addEventListener('click', () => {
