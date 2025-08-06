@@ -99,14 +99,31 @@
       position: fixed;
       bottom: 20px;
       left: 20px;
-      color: white;
+      color: rgba(255, 255, 255, 0.8);
       font-family: monospace;
       font-size: 10px;
       z-index: 10;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.6);
       padding: 8px;
       border-radius: 5px;
       overflow: hidden;
+    }
+
+    .controls-input {
+      background: transparent;
+      border: 1px solid rgba(0, 255, 0, 0.5);
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 10px;
+      padding: 2px 4px;
+      margin-top: 4px;
+      outline: none;
+      width: 200px;
+    }
+
+    .controls-input:focus {
+      border-color: #00ff00;
+      box-shadow: 0 0 5px #00ff00;
     }
 
     .typewriter {
@@ -223,6 +240,7 @@
 
   <div class="controls-info" id="controlsInfo">
     <div id="controlsText"></div>
+    <input type="text" class="controls-input" id="controlsInput" placeholder="Enter command..." />
   </div>
 
   <div class="login-overlay" id="loginOverlay">
@@ -602,6 +620,26 @@
     function closeLogin() {
       location.reload();
     }
+
+    // Add event listener for input box
+    document.addEventListener('DOMContentLoaded', function() {
+      const controlsInput = document.getElementById('controlsInput');
+      
+      controlsInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          // Clear the input
+          controlsInput.value = '';
+          
+          // Clear and restart typewriter effect
+          const controlsText = document.getElementById('controlsText');
+          controlsText.innerHTML = '';
+          
+          // Restart typewriter effect
+          const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Skip<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<input><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+          typewriterEffect(controlsText, controlsContent, 30);
+        }
+      });
+    });
 
     document.body.addEventListener('click', () => {
       console.log('Click detected, loading image:', index);
