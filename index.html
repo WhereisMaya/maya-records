@@ -316,8 +316,8 @@
     }
 
     function showVideo() {
-      // Random size between 0.5 and 1.5 scale
-      videoScale = 0.5 + Math.random() * 1.0;
+      // Random size between 0.5 and 3.0 scale
+      videoScale = 0.5 + Math.random() * 2.5;
       
       // Random position above central y-axis (0-50% range)
       videoY = Math.random() * 50;
@@ -327,6 +327,11 @@
       
       // Random opacity between 0.3 and 0.8
       videoOpacity = 0.3 + Math.random() * 0.5;
+      
+      // Load next video in playlist
+      if (!isMenuMode) {
+        loadNextVideo();
+      }
       
       // Fade in over 5 seconds
       videoContainer.classList.remove('fade-out');
