@@ -292,10 +292,16 @@
         
         // Only toggle video visibility if not in menu mode
         if (!isMenuMode) {
-          isVideoVisible = !isVideoVisible;
-          if (isVideoVisible) {
+          // Check if this is an odd or even background
+          const isOddBackground = (num % 2 === 1);
+          
+          if (isOddBackground) {
+            // Odd backgrounds: fade in
+            isVideoVisible = true;
             showVideo();
           } else {
+            // Even backgrounds: immediately hide (no fade out)
+            isVideoVisible = false;
             hideVideo();
           }
         }
@@ -329,7 +335,8 @@
     }
 
     function hideVideo() {
-      // No fade out, just hide
+      // Immediately hide without fade out
+      videoContainer.style.opacity = '0';
       videoContainer.classList.remove('fade-in');
       videoContainer.classList.add('fade-out');
     }
@@ -376,7 +383,7 @@
           videoOpacity = Math.max(0, videoOpacity - opacityStep);
           break;
         case 'p':
-          videoOpacity = Math.min(1, videoOpacity + opacityStep);
+          videoOpacity = Math.min(0.9, videoOpacity + opacityStep);
           break;
         case '-':
           videoScale = Math.max(0.1, videoScale - scaleStep);
