@@ -18,6 +18,17 @@
       background: black;
     }
 
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 9999;
+      transition: opacity 1s ease-in-out;
+    }
+
     #background {
       position: absolute;
       top: 0;
@@ -157,6 +168,7 @@
   </style>
 </head>
 <body>
+  <div class="loading-overlay" id="loadingOverlay"></div>
   <div id="background"></div>
   
   <div id="video-container">
@@ -547,6 +559,15 @@
     setTimeout(() => {
       videoContainer.style.opacity = '0.5';
     }, 6000);
+    
+    // Fade in everything after 5 seconds
+    setTimeout(() => {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      loadingOverlay.style.opacity = '0';
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+      }, 1000);
+    }, 5000);
 
     // Ensure audio plays when user interacts (browser autoplay policy)
     document.addEventListener('click', function() {
