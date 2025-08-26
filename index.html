@@ -530,6 +530,9 @@
         case 'a':
           toggleExternalInteraction();
           break;
+        case 'm':
+          toggleMusicMute();
+          break;
         case 'u':
           videoY = Math.max(0, videoY - step);
           break;
@@ -597,6 +600,23 @@
     function toggleExternalInteraction() {
       if (externalOverlay.style.display !== 'block') return;
       setExternalInteraction(!externalInteractionEnabled);
+    }
+
+    // Close external overlay on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (externalOverlay.style.display === 'block') {
+          externalOverlay.style.display = 'none';
+          // Reset interactivity state when closing
+          setExternalInteraction(false);
+          // Optionally clear the src to stop any playing media
+          // externalIframe.src = '';
+        }
+      }
+    });
+
+    function toggleMusicMute() {
+      audioPlayer.muted = !audioPlayer.muted;
     }
 
     function showLoginScreen() {
