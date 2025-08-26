@@ -812,8 +812,10 @@
         
         // Start typewriter effect for controls
         const controlsText = document.getElementById('controlsText');
-        const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Open Site Overlay<br>A: Toggle Assistant / Interactivity<br>M: Mute/Unmute Music<br>ESC: Close Site Overlay<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style="color: #ff0066; text-shadow: 0 0 10px #ff0066;">Maya Records</span><br>Control://<span style="background: transparent; border: 1px solid rgba(0, 255, 0, 0.5); color: #00ff00; padding: 1px 3px; border-radius: 2px;">input</span><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
+        const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Open Site Overlay<br>A: Toggle Assistant / Interactivity<br>M: Mute/Unmute Music<br>ESC: Close Site Overlay<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style=\"color: #ff0066; text-shadow: 0 0 10px #ff0066;\">Maya Records</span><br>Control://<span style=\"background: transparent; border: 1px solid rgba(0, 255, 0, 0.5); color: #00ff00; padding: 1px 3px; border-radius: 2px;\">input</span><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
         typewriterEffect(controlsText, controlsContent, 30);
+        // Attempt to show assistant by default
+        showAssistant();
       }, 1000);
     }, 5000);
 
@@ -822,6 +824,15 @@
       if (audioPlayer.paused) {
         audioPlayer.play().catch(e => console.log('Audio play failed:', e));
       }
+      // Also ensure assistant audio can play after first interaction
+      try {
+        if (luckyVideo) {
+          luckyVideo.muted = false;
+          if (luckyVideo.paused) {
+            luckyVideo.play().catch(() => {});
+          }
+        }
+      } catch {}
     }, { once: true });
   </script>
 </body>
