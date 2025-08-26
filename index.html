@@ -293,7 +293,7 @@
     <iframe id="externalIframe" src="" frameborder="0"></iframe>
   </div>
 
-  <video id="lucky-video" autoplay loop playsinline preload="auto" crossorigin="anonymous">
+  <video id="lucky-video" playsinline preload="auto" crossorigin="anonymous">
     <source src="lucky-assistant.webm" type="video/webm">
   </video>
 
@@ -647,14 +647,18 @@
       // enable audio
       luckyVideo.muted = false;
       luckyVideo.volume = 1.0;
-      // Attempt play in case browser paused on display change
-      // Force reload source and play to handle caching/first toggle
-      if (luckyVideo.readyState < 2) {
-        luckyVideo.load();
+      // Reset to beginning and play once
+      try {
+        if (luckyVideo.readyState < 2) {
+          luckyVideo.load();
+        }
+        luckyVideo.currentTime = 0;
+        luckyVideo.play().catch((err) => {
+          console.warn('Assistant play blocked or failed:', err);
+        });
+      } catch (err) {
+        console.warn('Assistant show error:', err);
       }
-      luckyVideo.play().catch((err) => {
-        console.warn('Assistant play blocked or failed:', err);
-      });
     }
 
     function hideAssistant() {
@@ -665,10 +669,15 @@
     }
 
     function toggleAssistant() {
-      if (isAssistantVisible) {
-        hideAssistant();
-      } else {
+      if (!isAssistantVisible) {
         showAssistant();
+        return;
+      }
+      // Visible: if ended or paused, restart; else hide
+      if (luckyVideo.ended || luckyVideo.paused) {
+        showAssistant();
+      } else {
+        hideAssistant();
       }
     }
 
@@ -682,6 +691,10 @@
       });
       luckyVideo.addEventListener('loadeddata', () => {
         console.log('Assistant video data loaded.');
+      });
+      luckyVideo.addEventListener('ended', () => {
+        // When finished, keep visible until user toggles again
+        console.log('Assistant video ended.');
       });
     }
 
