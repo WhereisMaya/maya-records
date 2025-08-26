@@ -214,6 +214,25 @@
       margin-top: 10px;
       font-size: 14px;
     }
+
+    /* External overlay for mindeseye.dev */
+    .external-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 2000;
+      display: none;
+    }
+
+    #externalIframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -256,6 +275,10 @@
     </div>
   </div>
 
+  <div class="external-overlay" id="externalOverlay">
+    <iframe id="externalIframe" src="" frameborder="0"></iframe>
+  </div>
+
   <script>
     let index = 1;
     let videoIndex = 0;
@@ -273,6 +296,9 @@
     const videoContainer = document.getElementById('video-container');
     const videoIframe = document.getElementById('video-iframe');
     const videoPlayer = document.getElementById('video-player');
+    const externalOverlay = document.getElementById('externalOverlay');
+    const externalIframe = document.getElementById('externalIframe');
+    let externalInteractionEnabled = false;
 
     // Video player state
     let videoX = 50; // percentage
@@ -498,6 +524,12 @@
       const scaleStep = 0.1;
       
       switch(e.key.toLowerCase()) {
+        case 's':
+          openExternalSite();
+          break;
+        case 'a':
+          toggleExternalInteraction();
+          break;
         case 'u':
           videoY = Math.max(0, videoY - step);
           break;
@@ -548,6 +580,24 @@
       
       updateVideoPosition();
     });
+
+    function openExternalSite() {
+      externalOverlay.style.display = 'block';
+      if (externalIframe.src !== 'https://mindeseye.dev/') {
+        externalIframe.src = 'https://mindeseye.dev/';
+      }
+      setExternalInteraction(false);
+    }
+
+    function setExternalInteraction(enabled) {
+      externalInteractionEnabled = enabled;
+      externalIframe.style.pointerEvents = enabled ? 'auto' : 'none';
+    }
+
+    function toggleExternalInteraction() {
+      if (externalOverlay.style.display !== 'block') return;
+      setExternalInteraction(!externalInteractionEnabled);
+    }
 
     function showLoginScreen() {
       document.getElementById('loginOverlay').style.display = 'flex';
