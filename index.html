@@ -233,6 +233,18 @@
       border: none;
       pointer-events: none;
     }
+
+    /* Assistant video */
+    #lucky-video {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 400px;
+      height: auto;
+      pointer-events: none;
+      z-index: 3000;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -279,6 +291,10 @@
     <iframe id="externalIframe" src="" frameborder="0"></iframe>
   </div>
 
+  <video id="lucky-video" autoplay loop muted playsinline>
+    <source src="lucky-assistant.webm" type="video/webm">
+  </video>
+
   <script>
     let index = 1;
     let videoIndex = 0;
@@ -298,7 +314,9 @@
     const videoPlayer = document.getElementById('video-player');
     const externalOverlay = document.getElementById('externalOverlay');
     const externalIframe = document.getElementById('externalIframe');
+    const luckyVideo = document.getElementById('lucky-video');
     let externalInteractionEnabled = false;
+    let isAssistantVisible = false;
 
     // Video player state
     let videoX = 50; // percentage
@@ -529,6 +547,7 @@
           break;
         case 'a':
           toggleExternalInteraction();
+          toggleAssistant();
           break;
         case 'm':
           toggleMusicMute();
@@ -617,6 +636,28 @@
 
     function toggleMusicMute() {
       audioPlayer.muted = !audioPlayer.muted;
+    }
+
+    function showAssistant() {
+      if (!luckyVideo) return;
+      luckyVideo.style.display = 'block';
+      isAssistantVisible = true;
+      // Attempt play in case browser paused on display change
+      luckyVideo.play().catch(() => {});
+    }
+
+    function hideAssistant() {
+      if (!luckyVideo) return;
+      luckyVideo.style.display = 'none';
+      isAssistantVisible = false;
+    }
+
+    function toggleAssistant() {
+      if (isAssistantVisible) {
+        hideAssistant();
+      } else {
+        showAssistant();
+      }
     }
 
     function showLoginScreen() {
