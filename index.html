@@ -247,6 +247,18 @@
       z-index: 10000;
       display: none;
     }
+    #assistant-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      height: auto;
+      z-index: 10001;
+      cursor: pointer;
+      display: block;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
   </style>
 </head>
 <body>
@@ -296,6 +308,7 @@
   <video id="lucky-video" playsinline preload="auto" crossorigin="anonymous">
     <source src="lucky-assistant.webm" type="video/webm">
   </video>
+  <img id="assistant-button" src="gb.png" alt="assistant toggle">
 
   <script>
     let index = 1;
@@ -317,6 +330,7 @@
     const externalOverlay = document.getElementById('externalOverlay');
     const externalIframe = document.getElementById('externalIframe');
     const luckyVideo = document.getElementById('lucky-video');
+    const assistantButton = document.getElementById('assistant-button');
     let externalInteractionEnabled = false;
     let isAssistantVisible = false;
 
@@ -643,6 +657,8 @@
     function showAssistant() {
       if (!luckyVideo) return;
       luckyVideo.style.display = 'block';
+      luckyVideo.style.pointerEvents = 'auto';
+      if (assistantButton) assistantButton.style.display = 'none';
       isAssistantVisible = true;
       // enable audio
       luckyVideo.muted = false;
@@ -663,8 +679,11 @@
 
     function hideAssistant() {
       if (!luckyVideo) return;
+      try { luckyVideo.pause(); } catch (err) {}
       luckyVideo.style.display = 'none';
+      luckyVideo.style.pointerEvents = 'none';
       luckyVideo.muted = true;
+      if (assistantButton) assistantButton.style.display = 'block';
       isAssistantVisible = false;
     }
 
@@ -695,6 +714,18 @@
       luckyVideo.addEventListener('ended', () => {
         // When finished, keep visible until user toggles again
         console.log('Assistant video ended.');
+      });
+      // Close assistant on click
+      luckyVideo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hideAssistant();
+      });
+    }
+    // Open assistant on button click
+    if (assistantButton) {
+      assistantButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showAssistant();
       });
     }
 
@@ -814,8 +845,10 @@
         const controlsText = document.getElementById('controlsText');
         const controlsContent = `U/D: Move Up/Down<br>L/R: Move Left/Right<br>O/P: Decrease/Increase Opacity<br>-/+: Decrease/Increase Size<br>F1-F9: Reload Documents<br>S: Open Site Overlay<br>A: Toggle Assistant / Interactivity<br>M: Mute/Unmute Music<br>ESC: Close Site Overlay<br>?: Help<br>0: Login<br>.version1.1.mod<br>You are now logging-in to:<br><span style=\"color: #ff0066; text-shadow: 0 0 10px #ff0066;\">Maya Records</span><br>Control://<span style=\"background: transparent; border: 1px solid rgba(0, 255, 0, 0.5); color: #00ff00; padding: 1px 3px; border-radius: 2px;\">input</span><remote><br><array><logged><br>${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`;
         typewriterEffect(controlsText, controlsContent, 30);
-        // Attempt to show assistant by default
-        showAssistant();
+        // Fade in the assistant button to 0.5 opacity when site finishes fading in
+        if (assistantButton) {
+          assistantButton.style.opacity = '0.5';
+        }
       }, 1000);
     }, 5000);
 
@@ -826,7 +859,7 @@
       }
       // Also ensure assistant audio can play after first interaction
       try {
-        if (luckyVideo) {
+        if (luckyVideo && isAssistantVisible) {
           luckyVideo.muted = false;
           if (luckyVideo.paused) {
             luckyVideo.play().catch(() => {});
