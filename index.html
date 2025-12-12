@@ -445,6 +445,11 @@
         
         // Listen for video end to load next video
         videoPlayer.onended = () => {
+          // If the finished video is one.mp4, open the external site overlay (same as 'S' key)
+          if (currentVideoUrl && /(^|\/)one\.mp4$/i.test(currentVideoUrl.trim())) {
+            openExternalSite();
+            return;
+          }
           if (!isMenuMode) {
             loadNextVideo();
           } else {
