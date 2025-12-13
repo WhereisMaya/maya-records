@@ -226,6 +226,21 @@
       z-index: 2000;
       display: none;
     }
+    #overlay-close {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: auto;
+      z-index: 2001;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s ease-in-out;
+      display: block;
+    }
+    #overlay-close:hover {
+      opacity: 1;
+    }
 
     #externalIframe {
       width: 100%;
@@ -303,6 +318,7 @@
 
   <div class="external-overlay" id="externalOverlay">
     <iframe id="externalIframe" src="" frameborder="0"></iframe>
+    <img id="overlay-close" src="gb.png" alt="close panel">
   </div>
 
   <video id="lucky-video" playsinline preload="auto" crossorigin="anonymous">
@@ -329,6 +345,7 @@
     const videoPlayer = document.getElementById('video-player');
     const externalOverlay = document.getElementById('externalOverlay');
     const externalIframe = document.getElementById('externalIframe');
+    const overlayClose = document.getElementById('overlay-close');
     const luckyVideo = document.getElementById('lucky-video');
     const assistantButton = document.getElementById('assistant-button');
     let externalInteractionEnabled = false;
@@ -749,6 +766,14 @@
       assistantButton.addEventListener('click', (e) => {
         e.stopPropagation();
         showAssistant();
+      });
+    }
+    // Close overlay via close button
+    if (overlayClose) {
+      overlayClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        externalOverlay.style.display = 'none';
+        setExternalInteraction(false);
       });
     }
 
